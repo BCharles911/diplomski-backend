@@ -1,6 +1,9 @@
 import { IsEmail, IsNotEmpty } from 'class-validator';
+import { Comment } from 'src/comments/entities/comment.entity';
 import { JobPost } from 'src/job-posts/entities/job-post.entity';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Tier } from 'src/tier/entities/tier.entity';
+import { UserSkill } from 'src/user-skills/entities/user-skill.entity';
+import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -37,6 +40,16 @@ export class User {
   })
   role: UserRole;
 
+  @OneToOne(() => Tier)
+  @JoinColumn()
+  tier: Tier;
+
   @OneToMany(() => JobPost, jobPost => jobPost.user)
   jobPosts: JobPost[];
+
+  @OneToMany(() => Comment, comment => comment.user)
+  comments: Comment[];
+
+  @OneToMany(() => UserSkill, userSkill => userSkill.user)
+  userSkills: UserSkill[];
 }
