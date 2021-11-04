@@ -15,6 +15,10 @@ import { SkillsModule } from './skills/skills.module';
 import { UserSkillsModule } from './user-skills/user-skills.module';
 import { UserSkill } from './user-skills/entities/user-skill.entity';
 import { Skill } from './skills/entities/skill.entity';
+import { RequestsModule } from './requests/requests.module';
+import { Request } from './requests/entities/request.entity';
+import { UserReviewsModule } from './user-reviews/user-reviews.module';
+import { UserReview } from './user-reviews/entities/user-review.entity';
 
 @Module({
   imports: [
@@ -25,7 +29,7 @@ import { Skill } from './skills/entities/skill.entity';
       username: 'root',
       password: 'root',
       database: 'diplomski',
-      entities: [User, JobPost, Comment, Tier, Skill, UserSkill],
+      entities: [User, JobPost, Comment, Tier, Skill, UserSkill, Request, UserReview],
       synchronize: true,
     }),
     CommentsModule,
@@ -34,6 +38,8 @@ import { Skill } from './skills/entities/skill.entity';
     TierModule,
     SkillsModule,
     UserSkillsModule,
+    RequestsModule,
+    UserReviewsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

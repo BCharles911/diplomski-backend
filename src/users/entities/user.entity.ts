@@ -1,7 +1,9 @@
 import { IsEmail, IsNotEmpty } from 'class-validator';
 import { Comment } from 'src/comments/entities/comment.entity';
 import { JobPost } from 'src/job-posts/entities/job-post.entity';
+import { Request } from 'src/requests/entities/request.entity';
 import { Tier } from 'src/tier/entities/tier.entity';
+import { UserReview } from 'src/user-reviews/entities/user-review.entity';
 import { UserSkill } from 'src/user-skills/entities/user-skill.entity';
 import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
@@ -50,6 +52,12 @@ export class User {
   @OneToMany(() => Comment, comment => comment.user)
   comments: Comment[];
 
+  @OneToMany(() => Request, request => request.user)
+  requests: Request[];
+
   @OneToMany(() => UserSkill, userSkill => userSkill.user)
   userSkills: UserSkill[];
+
+  @OneToMany(() => UserReview, review => review.user)
+  reviews: UserReview[];
 }
