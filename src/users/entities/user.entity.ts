@@ -5,7 +5,8 @@ import { Request } from 'src/requests/entities/request.entity';
 import { Tier } from 'src/tier/entities/tier.entity';
 import { UserReview } from 'src/user-reviews/entities/user-review.entity';
 import { UserSkill } from 'src/user-skills/entities/user-skill.entity';
-import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { BeforeInsert, Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -15,6 +16,12 @@ export enum UserRole {
 
 @Entity()
 export class User {
+    
+
+  constructor(partial: Partial<User>) {
+      Object.assign(this, partial);
+  }
+    
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -29,11 +36,19 @@ export class User {
   @Column()
   password: string;
 
+  @BeforeInsert()
+  async hashPassword() {
+      this.password = await bcrypt.hash(this.password, 10);
+  }
+
   @Column()
   firstName: string;
 
   @Column()
   lastName: string;
+
+  @Column()
+
 
   @Column({
     type: 'enum',

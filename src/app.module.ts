@@ -19,17 +19,28 @@ import { RequestsModule } from './requests/requests.module';
 import { Request } from './requests/entities/request.entity';
 import { UserReviewsModule } from './user-reviews/user-reviews.module';
 import { UserReview } from './user-reviews/entities/user-review.entity';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot( { envFilePath: '.env.development' }),
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'root',
-      password: 'root',
-      database: 'diplomski',
-      entities: [User, JobPost, Comment, Tier, Skill, UserSkill, Request, UserReview],
+      host: process.env.MYSQL_DB_HOST,
+      port: Number.parseInt(process.env.MYSQL_DB_PORT),
+      username: process.env.MYSQL_DB_USER,
+      password: process.env.MYSQL_DB_PASS,
+      database: process.env.MYSQL_DB_NAME,
+      entities: [
+        User,
+        JobPost,
+        Comment,
+        Tier,
+        Skill,
+        UserSkill,
+        Request,
+        UserReview,
+      ],
       synchronize: true,
     }),
     CommentsModule,

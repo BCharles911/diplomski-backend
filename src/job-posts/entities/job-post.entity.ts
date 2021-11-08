@@ -11,6 +11,8 @@ export class JobPost {
     id: string;
 
 
+
+
     @Column()
     jobTitle: string;
 
@@ -24,6 +26,9 @@ export class JobPost {
     numberOfHours: number;
 
     @Column()
+    addressOfJob: string;
+
+    @Column()
     fixedPrice: boolean;
 
     @Column()
@@ -34,6 +39,12 @@ export class JobPost {
 
     @Column()
     numberOfPeople: number;
+
+    @Column({
+        nullable: false,
+        select: false
+    })
+    spotsFilled: boolean;
 
     @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
     createTime: string;
