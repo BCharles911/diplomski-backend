@@ -1,11 +1,19 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateTierDto } from './dto/create-tier.dto';
 import { UpdateTierDto } from './dto/update-tier.dto';
+import { Tier } from './entities/tier.entity';
 
 @Injectable()
 export class TierService {
-  create(createTierDto: CreateTierDto) {
-    return 'This action adds a new tier';
+
+
+  constructor(
+    @InjectRepository(Tier)
+    private tierRepository: Repository<Tier>) { }
+  create(tier: Tier) {
+    return this.tierRepository.save(tier)
   }
 
   findAll() {

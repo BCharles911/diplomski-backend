@@ -7,6 +7,7 @@ import { UserReview } from 'src/user-reviews/entities/user-review.entity';
 import { UserSkill } from 'src/user-skills/entities/user-skill.entity';
 import { BeforeInsert, Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { AvailabilityCalendar } from 'src/availability-calendars/entities/availability-calendar.entity';
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -25,7 +26,7 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column( {unique: true } )
   @IsEmail()
   email: string;
 
@@ -33,22 +34,27 @@ export class User {
   @IsNotEmpty()
   username: string;
 
-  @Column()
+  // not gonna select password
+  @Column( { select: false, length: 255 })
   password: string;
 
+
   @BeforeInsert()
-  async hashPassword() {
-      this.password = await bcrypt.hash(this.password, 10);
+  emailToLowerCase() {
+    this.email = this.email.toLowerCase();
   }
 
   @Column()
   firstName: string;
 
-  @Column()
+  @Column({ nullable: true })
   lastName: string;
 
-  @Column()
+  @Column({ nullable: true })
+  dateOfBirth: Date;
 
+  @Column({ unique: true })
+  phoneNumber: string;
 
   @Column({
     type: 'enum',
@@ -60,6 +66,10 @@ export class User {
   @OneToOne(() => Tier)
   @JoinColumn()
   tier: Tier;
+
+  @OneToOne(() => AvailabilityCalendar)
+  @JoinColumn()
+  availabilityCalendar: AvailabilityCalendar;
 
   @OneToMany(() => JobPost, jobPost => jobPost.user)
   jobPosts: JobPost[];

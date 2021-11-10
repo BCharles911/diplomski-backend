@@ -2,14 +2,15 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { TierService } from './tier.service';
 import { CreateTierDto } from './dto/create-tier.dto';
 import { UpdateTierDto } from './dto/update-tier.dto';
+import { Tier } from './entities/tier.entity';
 
 @Controller('tier')
 export class TierController {
   constructor(private readonly tierService: TierService) {}
 
   @Post()
-  create(@Body() createTierDto: CreateTierDto) {
-    return this.tierService.create(createTierDto);
+  create(@Body() tier: Tier) {
+    return this.tierService.create(tier);
   }
 
   @Get()

@@ -12,6 +12,11 @@ export class SkillsController {
     return this.skillsService.create(createSkillDto);
   }
 
+  @Post('/create-all')
+  createBulk(){
+    return this.skillsService.createBulk();
+  }
+
   @Get()
   findAll() {
     return this.skillsService.findAll();
@@ -19,7 +24,7 @@ export class SkillsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.skillsService.findOne(+id);
+    return this.skillsService.getOne(id);
   }
 
   @Patch(':id')

@@ -11,6 +11,11 @@ export enum TierLevel {
 @Entity()
 export class Tier {
 
+     constructor(numberOfReviews, averageRating) {
+       this.numberOfReviews = numberOfReviews;
+       this.averageRating = averageRating;
+     }
+
 
     @PrimaryGeneratedColumn('uuid')
     id: string;

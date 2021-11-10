@@ -20,9 +20,16 @@ import { Request } from './requests/entities/request.entity';
 import { UserReviewsModule } from './user-reviews/user-reviews.module';
 import { UserReview } from './user-reviews/entities/user-review.entity';
 import { ConfigModule } from '@nestjs/config';
+import { AuthModule } from './auth/auth.module';
+import { AvailabilityCalendarsModule } from './availability-calendars/availability-calendars.module';
+import { AvailabilityCalendar } from './availability-calendars/entities/availability-calendar.entity';
+import { JobPostSkills } from './job-posts/entities/job-post-skills.entity';
+
+
 
 @Module({
   imports: [
+
     ConfigModule.forRoot( { envFilePath: '.env.development' }),
     TypeOrmModule.forRoot({
       type: 'mysql',
@@ -40,6 +47,8 @@ import { ConfigModule } from '@nestjs/config';
         UserSkill,
         Request,
         UserReview,
+        AvailabilityCalendar,
+        JobPostSkills
       ],
       synchronize: true,
     }),
@@ -51,6 +60,8 @@ import { ConfigModule } from '@nestjs/config';
     UserSkillsModule,
     RequestsModule,
     UserReviewsModule,
+    AuthModule,
+    AvailabilityCalendarsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

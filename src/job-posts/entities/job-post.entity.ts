@@ -2,6 +2,7 @@ import { Comment } from "src/comments/entities/comment.entity";
 import { Request } from "src/requests/entities/request.entity";
 import { User } from "src/users/entities/user.entity";
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { JobPostSkills } from "./job-post-skills.entity";
 
 
 @Entity()
@@ -59,9 +60,14 @@ export class JobPost {
     @OneToMany(() => Request, request => request.jobPost)
     requests: Request[];
 
+    @OneToMany(() => JobPostSkills, jobPostSkill => jobPostSkill.skill)
+    jobPostSkills: JobPostSkills[];
+
     @ManyToMany(() => User)
     @JoinTable()
     users: User[];
+
+
 
     @Column()
     deleted:boolean;
