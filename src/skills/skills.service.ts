@@ -1,12 +1,15 @@
 import {
+  forwardRef,
   HttpException,
   HttpStatus,
+  Inject,
   Injectable
 } from '@nestjs/common';
 import {
   InjectRepository
 } from '@nestjs/typeorm';
 import {} from 'rxjs';
+import { JobPostsService } from 'src/job-posts/job-posts.service';
 import {
   Repository
 } from 'typeorm';
@@ -38,7 +41,8 @@ const SKILLS = ['Čuvanje dece',
 export class SkillsService {
 
   constructor(
-    @InjectRepository(Skill) private readonly skillsRepository: Repository < Skill > ) {
+    @InjectRepository(Skill) private readonly skillsRepository: Repository < Skill >,
+    @Inject(forwardRef(() => JobPostsService)) private readonly jobPostsService: JobPostsService) {
 
   }
 
@@ -74,13 +78,17 @@ export class SkillsService {
   }
 
   findAll() {
-    return `This action returns all skills`;
+    return this.skillsRepository.find()
   }
 
   getOne(skillName: string): Promise < Skill > {
     return this.skillsRepository.findOneOrFail({
       skillName
     });
+  }
+
+  getById(id: string): Promise < Skill > {
+    return this.skillsRepository.findOne({id});
   }
 
   update(id: number, updateSkillDto: UpdateSkillDto) {

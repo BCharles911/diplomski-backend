@@ -1,4 +1,5 @@
-import { Tier } from "src/tier/entities/tier.entity";
+import { City } from "./city.entity";
+import { TierLevel, UserRole } from "./user.entity";
 
 export interface UserI {
     id?: string;
@@ -6,8 +7,11 @@ export interface UserI {
     firstName?: string;
     lastName?: string;
     dateOfBirth?: Date;
-    email: string;
-    password: string;
-    tier?: Tier;
+    email?: string;
+    password?: string;
+    tierLevel?: TierLevel;
     phoneNumber?: string;
+    role?: UserRole;
+    city?: City;
+    //role?: string;
 }

@@ -1,19 +1,24 @@
 import { IsEmail, IsNotEmpty } from 'class-validator';
-import { Comment } from 'src/comments/entities/comment.entity';
 import { JobPost } from 'src/job-posts/entities/job-post.entity';
 import { Request } from 'src/requests/entities/request.entity';
-import { Tier } from 'src/tier/entities/tier.entity';
 import { UserReview } from 'src/user-reviews/entities/user-review.entity';
 import { UserSkill } from 'src/user-skills/entities/user-skill.entity';
-import { BeforeInsert, Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
-import * as bcrypt from 'bcrypt';
-import { AvailabilityCalendar } from 'src/availability-calendars/entities/availability-calendar.entity';
+import { BeforeInsert, Column, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { City } from './city.entity';
 
 export enum UserRole {
   ADMIN = 'admin',
   EMPLOYER = 'employer',
   EMPLOYEE = 'employee',
 }
+
+export enum TierLevel {
+  BRONZE = 'bronze',
+  SILVER = 'silver',
+  GOLD = 'gold',
+  PLATINUM = 'platinum'
+}
+
 
 @Entity()
 export class User {
@@ -56,6 +61,14 @@ export class User {
   @Column({ unique: true })
   phoneNumber: string;
 
+
+  @Column({
+    type: 'enum',
+    enum: TierLevel,
+    default: TierLevel.BRONZE
+  })
+  tierLevel: TierLevel;
+
   @Column({
     type: 'enum',
     enum: UserRole,
@@ -63,19 +76,9 @@ export class User {
   })
   role: UserRole;
 
-  @OneToOne(() => Tier)
-  @JoinColumn()
-  tier: Tier;
-
-  @OneToOne(() => AvailabilityCalendar)
-  @JoinColumn()
-  availabilityCalendar: AvailabilityCalendar;
-
   @OneToMany(() => JobPost, jobPost => jobPost.user)
   jobPosts: JobPost[];
 
-  @OneToMany(() => Comment, comment => comment.user)
-  comments: Comment[];
 
   @OneToMany(() => Request, request => request.user)
   requests: Request[];
@@ -85,4 +88,7 @@ export class User {
 
   @OneToMany(() => UserReview, review => review.user)
   reviews: UserReview[];
+
+  @ManyToOne(() => City, city => city.users)
+  city: City;
 }

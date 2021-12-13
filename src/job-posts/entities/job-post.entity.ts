@@ -1,13 +1,12 @@
-import { Comment } from "src/comments/entities/comment.entity";
 import { Request } from "src/requests/entities/request.entity";
 import { User } from "src/users/entities/user.entity";
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, Timestamp } from "typeorm";
 import { JobPostSkills } from "./job-post-skills.entity";
 
 
 @Entity()
 export class JobPost {
-    
+
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
@@ -29,6 +28,9 @@ export class JobPost {
     @Column()
     addressOfJob: string;
 
+    @Column({ type: "time" })
+    startTime: string;
+
     @Column()
     fixedPrice: boolean;
 
@@ -43,19 +45,16 @@ export class JobPost {
 
     @Column({
         nullable: false,
-        select: false
+        select: true,
+        default: false
     })
     spotsFilled: boolean;
 
-    @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
+    @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
     createTime: string;
-
-    @OneToMany(() => Comment, comment => comment.jobPost)
-    comments: Comment[];
 
     @ManyToOne(() => User, user => user.jobPosts)
     user: User;
-
 
     @OneToMany(() => Request, request => request.jobPost)
     requests: Request[];
@@ -67,9 +66,10 @@ export class JobPost {
     @JoinTable()
     users: User[];
 
+    @Column({ default: false })
+    deleted: boolean;
 
-
-    @Column()
-    deleted:boolean;
+    @Column({ default: false })
+    finished: boolean;
 
 }

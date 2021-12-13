@@ -7,12 +7,12 @@ import { UpdateJobPostDto } from './dto/update-job-post.dto';
 export class JobPostsController {
   constructor(private readonly jobPostsService: JobPostsService) {}
 
-  @Post()
-  create(@Body() createJobPostDto: CreateJobPostDto) {
-    return this.jobPostsService.create(createJobPostDto);
+  @Post('/create')
+  create(@Body() createJobPostDto: CreateJobPostDto, @Param('id') id: string) {
+    return this.jobPostsService.create(createJobPostDto, id);
   }
 
-  @Get()
+  @Get('/get-all')
   findAll() {
     return this.jobPostsService.findAll();
   }

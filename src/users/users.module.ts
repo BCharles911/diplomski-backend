@@ -1,21 +1,26 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { UsersController } from './users.controller';
 import { User } from './entities/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersHelperService } from './service/users-helper/users-helper.service';
 import { UsersService } from './service/users.service';
-import { TierService } from 'src/tier/tier.service';
-import { TierModule } from 'src/tier/tier.module';
 import { AuthModule } from 'src/auth/auth.module';
 import { ConfigService } from '@nestjs/config';
+import { City } from './entities/city.entity';
+import { RankService } from './service/rank/rank.service';
+import { Rank } from './entities/rank.entity';
+import { CityService } from './service/city/city.service';
+import { JobPostsModule } from 'src/job-posts/job-posts.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User]),
-  TierModule,
+  imports: [TypeOrmModule.forFeature([User, City, Rank,]),
+  forwardRef(() => JobPostsModule),
   AuthModule,
+  
+
   ],
-  exports: [TypeOrmModule],
+  exports: [TypeOrmModule, UsersService],
   controllers: [UsersController],
-  providers: [UsersService, UsersHelperService, ConfigService]
+  providers: [UsersService, RankService, UsersHelperService, ConfigService, RankService, CityService]
 })
 export class UsersModule {}

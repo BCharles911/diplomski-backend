@@ -1,5 +1,6 @@
 import { IsNotEmpty, IsString } from "class-validator";
-import { Tier } from "src/tier/entities/tier.entity";
+import { City } from "../entities/city.entity";
+import { TierLevel } from "../entities/user.entity";
 import { LoginUserDto } from "./login-user.dto";
 
 export class CreateUserDto extends LoginUserDto {
@@ -13,11 +14,20 @@ export class CreateUserDto extends LoginUserDto {
 
     lastName: string;
 
+    password: string;
+
     dateOfBirth: Date;
 
-    tier: Tier;
+    //tier: Tier;
+    role: string;
 
+    email: string;
+    
+    city: City;
+    
     phoneNumber: string;
+
+    tierLevel: TierLevel
     
 
 

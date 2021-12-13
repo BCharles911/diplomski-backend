@@ -17,7 +17,7 @@ export class SkillsController {
     return this.skillsService.createBulk();
   }
 
-  @Get()
+  @Get('/all')
   findAll() {
     return this.skillsService.findAll();
   }

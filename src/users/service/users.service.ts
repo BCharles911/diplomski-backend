@@ -1,83 +1,61 @@
-import {
-  HttpException,
-  HttpStatus,
-  Injectable
-} from '@nestjs/common';
-import {
-  InjectRepository
-} from '@nestjs/typeorm';
-import {
-  IPaginationOptions,
-  paginate,
-  Pagination
-} from 'nestjs-typeorm-paginate';
-import {
-  from,
-  map,
-  Observable,
-  switchMap
-} from 'rxjs';
+import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { IPaginationOptions, paginate, Pagination } from 'nestjs-typeorm-paginate';
+import { from, Observable, } from 'rxjs';
 import { AuthService } from 'src/auth/services/auth/auth.service';
-import {
-  Tier
-} from 'src/tier/entities/tier.entity';
-import {
-  TierService
-} from 'src/tier/tier.service';
-import {
-  Repository
-} from 'typeorm';
-import {
-  CreateUserDto
-} from '../dto/create-user.dto';
-import {
-  UpdateUserDto
-} from '../dto/update-user.dto';
-import {
-  User
-} from '../entities/user.entity';
-import {
-  UserI
-} from '../entities/user.interface';
-
-
-const bcrypt = require('bcrypt');
+import { JobPostsService } from 'src/job-posts/job-posts.service';
+import { Repository } from 'typeorm';
+import { UpdateUserDto } from '../dto/update-user.dto';
+import { User } from '../entities/user.entity';
+import { UserI } from '../entities/user.interface';
+import { CityService } from './city/city.service';
 
 @Injectable()
 export class UsersService {
 
   constructor(
-    @InjectRepository(User) private readonly userRepository: Repository < User > , private tierService: TierService,
-    @InjectRepository(Tier) private readonly tierRepository: Repository < Tier >, private authService: AuthService,
+    @InjectRepository(User) private readonly userRepository: Repository<User>,
+    private cityService: CityService,
+    private authService: AuthService,
+    @Inject(forwardRef(() => JobPostsService)) private postService: JobPostsService
   ) {
 
   }
   async create(newUser: UserI): Promise<UserI> {
+
     try {
-      const exists: boolean = await this.mailExists(newUser.email);
-      if (!exists) {
+      await this.cityService.create(newUser.city).then(city => newUser.city = city)
+      console.log(newUser);
+      const mailExists: boolean = await this.mailExists(newUser.email);
+      const usernameExists: boolean = await this.usernameExists(newUser.username);
+      const phoneNumberExists: boolean = await this.phoneNumberExists(newUser.phoneNumber);
+      if (!mailExists && !usernameExists && !phoneNumberExists) {
         const passwordHash: string = await this.hashPassword(newUser.password);
         newUser.password = passwordHash;
-        const user = await this.userRepository.save(this.userRepository.create(newUser));
-        return this.findOne(user.id);
-      } else {
-        throw new HttpException('Email is already in use', HttpStatus.CONFLICT);
+        await this.userRepository.save(this.userRepository.create(newUser)).catch(err => console.log(err));
+        return;
+      } else if (mailExists && usernameExists && phoneNumberExists) {
+        throw new HttpException('Your email, username and number already exists, check if you alreday created profile!', HttpStatus.CONFLICT);
+      } else if (phoneNumberExists) {
+        throw new HttpException('Phone number already in use', HttpStatus.CONFLICT);
       }
-    } catch {
-      throw new HttpException('Email is already in use', HttpStatus.CONFLICT);
+      else if (usernameExists) {
+        throw new HttpException('Username already in use', HttpStatus.CONFLICT);
+      } else {
+        throw new HttpException('Email is already taken', HttpStatus.CONFLICT);
+      }
+    } catch (e) {
+      throw new HttpException(e, HttpStatus.CONFLICT);
     }
   }
 
 
-
-
-
-  private hashPassword(password: string): Promise < string > {
+  private hashPassword(password: string): Promise<string> {
     return this.authService.hashPassword(password);
   }
 
 
-  private async findOne(id: string): Promise<UserI> {
+   async findOne(id: string): Promise<User> {
     return this.userRepository.findOne({ id });
   }
 
@@ -85,10 +63,29 @@ export class UsersService {
     return this.userRepository.findOneOrFail({ id });
   }
 
-  private async mailExists(email: string): Promise < boolean > {
+  private async mailExists(email: string): Promise<boolean> {
     const user = await this.userRepository.findOne({
       email
     });
+    if (user) {
+      console.log('user exists')
+      return true;
+    } else {
+      console.log('user does not exist')
+      return false;
+    }
+  }
+
+  private async usernameExists(username: string): Promise<boolean> {
+    const user = await this.userRepository.findOne({ username });
+    if (user) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  private async phoneNumberExists(phoneNumber: string): Promise<boolean> {
+    const user = await this.userRepository.findOne({ phoneNumber });
     if (user) {
       return true;
     } else {
@@ -97,8 +94,9 @@ export class UsersService {
   }
 
 
-  findAll(options: IPaginationOptions): Observable < Pagination < UserI >> {
-    return from(paginate < User > (this.userRepository, options));
+
+  findAll(options: IPaginationOptions): Observable<Pagination<UserI>> {
+    return from(paginate<User>(this.userRepository, options));
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
@@ -110,7 +108,7 @@ export class UsersService {
     return `This action removes a #${id} user`;
   }
 
-  private async findByEmail(email: string): Promise < UserI > {
+  private async findByEmail(email: string): Promise<UserI> {
     return this.userRepository.findOne({
       email
     }, {
