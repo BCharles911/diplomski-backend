@@ -8,7 +8,7 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
   app.useGlobalPipes(new ValidationPipe());
   app.enableCors();
-  //process.env.PORT is for production purposes
+  //process.env.PORT is for production purpose
   await app.listen(process.env.PORT || 3000);
 }
 bootstrap();
